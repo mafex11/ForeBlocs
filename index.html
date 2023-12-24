@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metamask Smart Contract Interaction</title>
+</head>
+<body>
+    <h1>Metamask Smart Contract Interaction</h1>
+
+    <button id="connectButton">Connect to Metamask</button>
+    <button id="setValueButton">Set Value</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js"></script>
+    <script>
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                window.web3 = new Web3(window.ethereum);
+                try {
+                    await window.ethereum.enable();
+                    console.log('Metamask connected');
+                } catch (error) {
+                    console.error('User denied account access');
+                }
+            } else if (window.web3) {
+                window.web3 = new Web3(window.web3.currentProvider);
+                console.log('Injected web3 detected');
+            } else {
+                console.log('No web3 provider detected');
+            }
+
+            const contractAddress = 'YOUR_CONTRACT_ADDRESS';
+            const contractABI = [ /* YOUR CONTRACT ABI HERE */ ];
+
+            const simpleContract = new window.web3.eth.Contract(contractABI, contractAddress);
+
+            document.getElementById('setValueButton').addEventListener('click', async () => {
+                const value = Math.floor(Math.random() * 100); // Example value
+
+                const accounts = await window.web3.eth.getAccounts();
+                const sender = accounts[0];
+
+                await simpleContract.methods.setValue(value).send({ from: sender });
+                console.log(`Value set to ${value}`);
+            });
+        });
+    </script>
+</body>
+</html>
